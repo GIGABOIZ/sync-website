@@ -1,0 +1,1047 @@
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SYNC — Elite Desktop Chat for Gamers &amp; Creators</title>
+<meta name="description" content="SYNC — the elite desktop chat client for gamers and creators. Co-developed by GIGABOIZ Studio & GIGALLC.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='8' fill='%230B0E14'/%3E%3Cpath d='M8.5 25.5C20 25.5 16 10.5 27.5 10.5' fill='none' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3Ccircle cx='8.5' cy='25.5' r='4.8' fill='white'/%3E%3Ccircle cx='27.5' cy='10.5' r='4.8' fill='white'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS & RESET ============ */
+:root{
+  --bg:#0B0E14; --panel:#151A26; --panel-2:#10141D; --panel-3:#1B2230; --ink:#0F1320;
+  --line:rgba(148,163,184,.14); --line-soft:rgba(148,163,184,.09);
+  --text:#FFFFFF; --muted:#94A3B8; --faint:#64748B;
+  --purple:#A855F7; --blue:#38BDF8; --green:#34D399;
+  --grad:linear-gradient(90deg,#A855F7 0%,#38BDF8 100%);
+  --fd:'Space Grotesk',sans-serif; --fb:'Inter',sans-serif; --fm:'JetBrains Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:rgba(168,85,247,.45);color:#fff}
+img,svg{display:block}
+button{font-family:inherit}
+a{text-decoration:none}
+.container{max-width:1180px;margin:0 auto;padding:0 24px}
+section{scroll-margin-top:90px;position:relative}
+h1,h2,h3,h4{font-family:var(--fd);letter-spacing:-.02em}
+.grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.icon{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.eyebrow{font-family:var(--fm);font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;color:#A5B4FC;font-weight:500}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+/* ============ BUTTONS ============ */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.55rem;border:1px solid transparent;border-radius:10px;font-family:var(--fd);font-weight:600;font-size:.95rem;padding:.8rem 1.4rem;cursor:pointer;text-decoration:none;white-space:nowrap;transition:transform .2s ease,box-shadow .25s ease,background .2s,border-color .2s,filter .2s}
+.btn-primary{background:var(--grad);color:#fff;box-shadow:0 0 0 1px rgba(255,255,255,.08) inset,0 8px 30px -8px rgba(168,85,247,.55),0 8px 30px -8px rgba(56,189,248,.35)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 0 1px rgba(255,255,255,.14) inset,0 14px 42px -8px rgba(168,85,247,.7),0 14px 42px -8px rgba(56,189,248,.5)}
+.btn-ghost{background:rgba(255,255,255,.03);border-color:rgba(148,163,184,.3);color:#E2E8F0}
+.btn-ghost:hover{border-color:rgba(148,163,184,.65);background:rgba(255,255,255,.06);transform:translateY(-2px)}
+.btn-sm{padding:.6rem 1.05rem;font-size:.84rem;border-radius:8px}
+.btn-lg{padding:1rem 1.7rem;font-size:1rem;border-radius:12px}
+.btn-block{width:100%}
+.spinner{width:15px;height:15px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ============ 1. FIXED NAVIGATION ============ */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;border-bottom:1px solid transparent;transition:background .3s,border-color .3s,backdrop-filter .3s}
+.nav.scrolled{background:rgba(11,14,20,.84);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom-color:var(--line)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:68px;gap:1rem}
+.brand{display:flex;align-items:center;gap:.65rem;color:#fff}
+.logo{width:30px;height:30px;color:#fff}
+.logo.xs{width:18px;height:18px}
+.brand-name{font-family:var(--fd);font-weight:700;font-size:1.22rem;letter-spacing:.2em}
+.nav-links{display:flex;gap:2rem}
+.nav-links a{color:var(--muted);font-size:.92rem;font-weight:500;position:relative;padding:.4rem 0;transition:color .2s}
+.nav-links a::after{content:'';position:absolute;left:0;bottom:0;height:2px;width:0;border-radius:2px;background:var(--grad);transition:width .25s ease}
+.nav-links a:hover,.nav-links a.active{color:#fff}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+.nav-actions{display:flex;align-items:center;gap:.75rem}
+.burger{display:none;background:none;border:1px solid rgba(148,163,184,.32);border-radius:9px;width:42px;height:42px;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+.burger span{display:block;width:18px;height:2px;background:#fff;border-radius:2px;transition:transform .3s,opacity .3s}
+.burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.burger.open span:nth-child(2){opacity:0}
+.burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.mobile-menu{display:none;position:fixed;top:68px;left:0;right:0;z-index:99;background:rgba(9,11,17,.98);backdrop-filter:blur(18px);border-bottom:1px solid var(--line);padding:1rem 24px 1.6rem;flex-direction:column}
+.mobile-menu.open{display:flex}
+.mobile-menu a{color:#E2E8F0;padding:.85rem .5rem;font-weight:500;border-bottom:1px solid var(--line-soft)}
+.mobile-menu a:hover{color:#fff;background:rgba(255,255,255,.03)}
+.mobile-menu .btn{margin-top:1rem}
+
+/* ============ 2. HERO ============ */
+.hero{padding:172px 0 70px;overflow:hidden}
+.hero-bg{position:absolute;inset:0;pointer-events:none;background:radial-gradient(640px 420px at 14% -4%,rgba(168,85,247,.15),transparent 62%),radial-gradient(760px 520px at 86% 8%,rgba(56,189,248,.11),transparent 62%)}
+.hero-bg::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(148,163,184,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(148,163,184,.055) 1px,transparent 1px);background-size:46px 46px;-webkit-mask-image:radial-gradient(ellipse 82% 62% at 50% 0%,#000 25%,transparent 78%);mask-image:radial-gradient(ellipse 82% 62% at 50% 0%,#000 25%,transparent 78%)}
+.hero-inner{position:relative;text-align:center;display:flex;flex-direction:column;align-items:center}
+.hero-badge{display:inline-flex;align-items:center;gap:.55rem;padding:.45rem 1.05rem;border-radius:999px;border:1px solid rgba(168,85,247,.42);background:rgba(168,85,247,.09);color:#D8B4FE;font-size:.76rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--purple);animation:pulse 2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(168,85,247,.6)}70%{box-shadow:0 0 0 9px rgba(168,85,247,0)}100%{box-shadow:0 0 0 0 rgba(168,85,247,0)}}
+.hero h1{font-size:clamp(2.45rem,5.8vw,4.35rem);line-height:1.08;font-weight:700;margin:1.4rem 0 1.15rem}
+.hero-sub{max-width:640px;color:var(--muted);font-size:1.07rem}
+.hero-ctas{display:flex;gap:1rem;margin-top:2.3rem;flex-wrap:wrap;justify-content:center}
+.os-note{font-family:var(--fm);font-size:.7rem;font-weight:500;opacity:.8;letter-spacing:.04em}
+.hero-meta{display:flex;gap:.9rem 1.8rem;margin-top:1.5rem;flex-wrap:wrap;justify-content:center;color:var(--faint);font-size:.72rem;font-family:var(--fm);letter-spacing:.14em}
+.mockup-wrap{position:relative;width:100%;max-width:1120px;margin-top:4.4rem}
+.mockup-wrap::before{content:'';position:absolute;inset:-9% -8%;background:radial-gradient(48% 58% at 28% 18%,rgba(168,85,247,.2),transparent 70%),radial-gradient(48% 58% at 76% 30%,rgba(56,189,248,.15),transparent 70%);filter:blur(44px);pointer-events:none}
+
+/* --- App window mockup --- */
+.app-window{position:relative;background:var(--panel);border:1px solid rgba(148,163,184,.17);border-radius:16px;overflow:hidden;box-shadow:0 60px 120px -30px rgba(0,0,0,.85);text-align:left}
+.app-titlebar{display:flex;align-items:center;justify-content:space-between;height:46px;padding:0 8px 0 16px;background:var(--panel-2);border-bottom:1px solid var(--line)}
+.tb-left{display:flex;align-items:center;gap:.6rem;font-size:.8rem;color:var(--muted);font-weight:500}
+.tb-chip{font-family:var(--fm);font-size:.64rem;padding:.16rem .5rem;border-radius:5px;background:rgba(168,85,247,.15);color:#C4B5FD;border:1px solid rgba(168,85,247,.35)}
+.tb-right{display:flex;gap:2px}
+.tb-btn{width:38px;height:32px;border:0;background:transparent;color:var(--muted);border-radius:6px;cursor:pointer;font-size:.85rem;line-height:1}
+.tb-btn:hover{background:rgba(255,255,255,.08);color:#fff}
+.tb-btn.close:hover{background:#E11D48;color:#fff}
+.app-body{display:flex;height:600px}
+.rail{width:72px;background:#0C0F16;display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:10px;border-right:1px solid var(--line-soft);flex:none}
+.rail-item{position:relative;width:46px;height:46px;border-radius:14px;background:var(--g);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:700;color:#fff;cursor:pointer;opacity:.5;transition:opacity .2s,transform .2s;border:0}
+.rail-item:hover{opacity:.85;transform:scale(1.06)}
+.rail-item.active{opacity:1}
+.rail-item.active::before{content:'';position:absolute;left:-13px;top:50%;transform:translateY(-50%);width:4px;height:26px;border-radius:0 4px 4px 0;background:#fff}
+.rail-add{width:46px;height:46px;border-radius:50%;border:1.5px dashed rgba(148,163,184,.45);background:transparent;color:var(--muted);font-size:1.3rem;line-height:1;cursor:pointer}
+.rail-add:hover{color:#fff;border-color:#fff}
+.chanbox{width:226px;background:var(--panel-2);border-right:1px solid var(--line);padding:14px 10px;overflow:hidden;flex:none}
+.chanbox-head{font-family:var(--fd);font-weight:600;font-size:.95rem;padding:.35rem .6rem .9rem;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.chan-label{font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);padding:.9rem .6rem .4rem;font-weight:600}
+.chan-row{display:flex;align-items:center;gap:.5rem;width:100%;padding:.45rem .6rem;border:0;background:transparent;color:var(--muted);font-size:.87rem;border-radius:8px;cursor:pointer;font-family:var(--fb);text-align:left;transition:background .15s,color .15s}
+.chan-row:hover{background:rgba(255,255,255,.045);color:#E2E8F0}
+.chan-row.active{background:var(--panel-3);color:#fff}
+.chan-row .icon{width:16px;height:16px}
+.badge-unread{margin-left:auto;background:var(--grad);color:#fff;font-size:.64rem;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 5px}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);margin-left:auto;box-shadow:0 0 8px rgba(52,211,153,.9);flex:none}
+.dm-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;color:#fff;flex:none;font-family:var(--fd)}
+.dm-status{width:8px;height:8px;border-radius:50%;background:var(--green);margin-left:auto;box-shadow:0 0 6px rgba(52,211,153,.8)}
+.chat{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--panel)}
+.chat-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.8rem 1.2rem;border-bottom:1px solid var(--line);background:#171D29}
+.ch-left{display:flex;align-items:center;gap:.7rem;min-width:0}
+.ch-left h3{font-size:.98rem}
+.ch-left p{font-size:.74rem;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ico-voice{display:none;color:var(--muted)}
+.chat.is-voice .ico-voice{display:block}
+.chat.is-voice .ico-hash{display:none}
+.ch-right{display:flex;align-items:center;gap:.9rem;flex:none}
+.members,.ping{display:inline-flex;align-items:center;gap:.4rem;font-size:.74rem;color:var(--muted);font-family:var(--fm)}
+.members .icon{width:14px;height:14px}
+.ping i{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px rgba(52,211,153,.8)}
+.ping b{color:var(--green);font-weight:600}
+.msgs{flex:1;overflow-y:auto;padding:1.2rem 1.2rem .6rem;display:flex;flex-direction:column;gap:1.1rem}
+.msgs::-webkit-scrollbar,.vp-list::-webkit-scrollbar{width:8px}
+.msgs::-webkit-scrollbar-thumb,.vp-list::-webkit-scrollbar-thumb{background:rgba(148,163,184,.25);border-radius:4px}
+.msg{display:flex;gap:.8rem}
+.msg-av{width:38px;height:38px;border-radius:12px;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.78rem;font-family:var(--fd)}
+.msg-main{min-width:0}
+.msg-top{display:flex;align-items:baseline;gap:.6rem}
+.msg-user{font-weight:600;font-size:.9rem}
+.msg-time{font-size:.66rem;color:var(--faint);font-family:var(--fm)}
+.msg-main p{font-size:.9rem;color:#CBD5E1;margin-top:.1rem;word-wrap:break-word}
+.composer{display:flex;gap:.6rem;padding:.9rem 1.2rem;border-top:1px solid var(--line);background:#171D29}
+.composer input{flex:1;min-width:0;background:var(--ink);border:1px solid rgba(148,163,184,.2);border-radius:10px;padding:.7rem .9rem;color:#fff;font-family:var(--fb);font-size:.88rem;outline:none;transition:border-color .2s,box-shadow .2s}
+.composer input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(56,189,248,.15)}
+.send-btn{width:44px;border:0;border-radius:10px;background:var(--grad);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none}
+.send-btn:hover{filter:brightness(1.12)}
+.voice-view{display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;padding:2rem;overflow:auto}
+.chat.is-voice .voice-view{display:flex}
+.chat.is-voice .msgs,.chat.is-voice .composer{display:none}
+.vv-top{display:flex;align-items:center;gap:.8rem;text-align:left}
+.vv-ic{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,rgba(168,85,247,.2),rgba(56,189,248,.2));border:1px solid rgba(168,85,247,.4);display:flex;align-items:center;justify-content:center;color:#C4B5FD}
+.vv-top h4{font-size:1.05rem}
+.vv-top p{font-size:.76rem;color:var(--faint)}
+.eq{display:flex;align-items:flex-end;gap:4px;height:90px;width:min(430px,92%)}
+.eq i{flex:1;height:100%;border-radius:3px;background:linear-gradient(180deg,var(--blue),var(--purple));transform-origin:bottom;animation:eqb 1.1s ease-in-out infinite;opacity:.9}
+.eq i:nth-child(2n){animation-duration:.9s;animation-delay:.1s}
+.eq i:nth-child(3n){animation-duration:1.35s;animation-delay:.22s}
+.eq i:nth-child(5n){animation-duration:.78s;animation-delay:.05s}
+@keyframes eqb{0%,100%{transform:scaleY(.2)}50%{transform:scaleY(1)}}
+.voice-view.muted .eq i{animation-play-state:paused;transform:scaleY(.12);opacity:.28}
+.vv-users{display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center}
+.vv-chip{display:flex;align-items:center;gap:.5rem;background:var(--ink);border:1px solid rgba(148,163,184,.16);padding:.35rem .8rem .35rem .35rem;border-radius:999px;font-size:.8rem;color:#CBD5E1}
+.vv-chip .msg-av{width:26px;height:26px;border-radius:50%;font-size:.62rem}
+.vv-chip i{font-family:var(--fm);font-size:.64rem;color:var(--green);font-style:normal}
+.vv-actions{display:flex;gap:.7rem}
+.voicepanel{width:242px;background:var(--panel-2);border-left:1px solid var(--line);display:flex;flex-direction:column;flex:none}
+.vp-head{padding:1rem 1rem .7rem;font-size:.68rem;letter-spacing:.15em;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:.55rem}
+.vp-head .live-dot{margin:0}
+.vp-list{flex:1;overflow-y:auto;padding:0 10px;display:flex;flex-direction:column;gap:6px}
+.vp-row{display:flex;align-items:center;gap:.6rem;padding:.5rem .55rem;border-radius:10px;background:rgba(255,255,255,.025)}
+.vp-row .msg-av{width:32px;height:32px;border-radius:10px;font-size:.66rem}
+.vp-row.more .msg-av{background:var(--panel-3);color:var(--muted)}
+.vp-meta{display:flex;flex-direction:column;line-height:1.25;min-width:0}
+.vp-meta span{font-size:.8rem;color:#E2E8F0;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vp-row.speaking .vp-meta span{color:#7DD3FC}
+.vp-meta i{font-style:normal;font-family:var(--fm);font-size:.6rem;color:var(--faint)}
+.mini-wave{margin-left:auto;display:flex;align-items:flex-end;gap:2px;height:14px;flex:none}
+.mini-wave i{width:3px;background:var(--blue);border-radius:2px;animation:mw .8s ease-in-out infinite}
+.mini-wave i:nth-child(1){height:60%}.mini-wave i:nth-child(2){height:100%;animation-delay:.15s}.mini-wave i:nth-child(3){height:40%;animation-delay:.3s}.mini-wave i:nth-child(4){height:80%;animation-delay:.45s}
+@keyframes mw{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}
+.vp-row:not(.speaking) .mini-wave i{animation:none;transform:scaleY(.4);opacity:.22}
+.vp-row.more .mini-wave{display:none}
+.vp-foot{padding:.9rem;display:flex;gap:.5rem;border-top:1px solid var(--line)}
+.vp-foot .btn{flex:1}
+
+/* ============ 3. GROWTH TRACKER ============ */
+.tracker-section{padding:4.5rem 0}
+.tracker-card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:clamp(1.8rem,4vw,3.2rem);position:relative;overflow:hidden}
+.tracker-card::before{content:'';position:absolute;top:-140px;right:-90px;width:400px;height:400px;background:radial-gradient(circle,rgba(168,85,247,.13),transparent 70%);pointer-events:none}
+.tracker-head{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:2.2rem;flex-wrap:wrap}
+.cohort-chip{font-family:var(--fm);font-size:.7rem;color:#67E8F9;border:1px solid rgba(56,189,248,.35);background:rgba(56,189,248,.08);padding:.38rem .85rem;border-radius:999px}
+.tracker-grid{display:grid;grid-template-columns:1.35fr 1fr;gap:2rem;align-items:end;margin-bottom:2.2rem}
+.tracker-big{font-family:var(--fd);font-size:clamp(2.6rem,5vw,3.9rem);font-weight:700;line-height:1}
+.tracker-big .dim{color:var(--faint);font-size:.5em;font-weight:600}
+.tracker-sub{color:var(--muted);margin-top:.6rem;font-size:.94rem}
+.tracker-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem}
+.tstat{background:var(--panel-2);border:1px solid var(--line-soft);border-radius:14px;padding:1rem .6rem;text-align:center}
+.tstat b{display:block;font-family:var(--fd);font-size:1.32rem;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.tstat span{font-size:.64rem;color:var(--faint);text-transform:uppercase;letter-spacing:.1em}
+.progress-track{height:14px;border-radius:99px;background:var(--ink);border:1px solid rgba(148,163,184,.13);overflow:hidden;position:relative}
+.progress-fill{height:100%;width:0;border-radius:99px;background:var(--grad);position:relative;transition:width 1.6s cubic-bezier(.22,1,.36,1);box-shadow:0 0 18px rgba(56,189,248,.55)}
+.progress-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);transform:translateX(-100%);animation:shimmer 2.4s infinite}
+@keyframes shimmer{55%,100%{transform:translateX(100%)}}
+.p-dot{position:absolute;right:-6px;top:50%;transform:translateY(-50%);width:15px;height:15px;border-radius:50%;background:#fff;box-shadow:0 0 12px var(--blue),0 0 26px var(--purple);animation:pulse 2s infinite}
+.progress-labels{display:flex;justify-content:space-between;margin-top:.75rem;font-family:var(--fm);font-size:.72rem;color:var(--faint)}
+.progress-labels b{color:#E2E8F0;font-weight:600}
+.tracker-caption{margin-top:2rem;font-weight:700;font-family:var(--fd);font-size:clamp(1.02rem,1.7vw,1.3rem);text-align:center;line-height:1.45}
+
+/* ============ 4. FEATURE MATRIX ============ */
+.features{padding:5.5rem 0}
+.section-head{text-align:center;max-width:640px;margin:0 auto 3.5rem}
+.section-head h2{font-size:clamp(1.9rem,3.6vw,2.8rem);margin:.8rem 0 .9rem}
+.section-head p{color:var(--muted)}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.25rem}
+.feat-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:2rem 1.7rem;position:relative;overflow:hidden;transition:transform .3s,border-color .3s,box-shadow .3s}
+.feat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);transform:scaleX(0);transform-origin:left;transition:transform .35s ease}
+.feat-card:hover{transform:translateY(-6px);border-color:rgba(168,85,247,.45);box-shadow:0 24px 60px -20px rgba(0,0,0,.7),0 0 44px -12px rgba(168,85,247,.35)}
+.feat-card:hover::before{transform:scaleX(1)}
+.feat-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(168,85,247,.18),rgba(56,189,248,.18));border:1px solid rgba(168,85,247,.38);color:#C4B5FD;margin-bottom:1.3rem}
+.feat-icon .icon{width:24px;height:24px}
+.feat-card h3{font-size:1.15rem;margin-bottom:.65rem}
+.feat-card p{color:var(--muted);font-size:.92rem;margin-bottom:1.25rem}
+.feat-list{list-style:none;display:flex;flex-direction:column;gap:.55rem}
+.feat-list li{display:flex;gap:.6rem;align-items:center;font-size:.85rem;color:#CBD5E1}
+.feat-list .icon{width:15px;height:15px;color:var(--green)}
+
+/* ============ ROADMAP ============ */
+.roadmap-sec{padding:5.5rem 0;background:linear-gradient(180deg,transparent,rgba(21,26,38,.55) 30%,rgba(21,26,38,.55) 70%,transparent)}
+.tl{display:grid;grid-template-columns:repeat(4,1fr);gap:1.6rem;position:relative}
+.tl::before{content:'';position:absolute;top:7px;left:6px;right:6px;height:2px;background:linear-gradient(90deg,#A855F7 0%,#38BDF8 36%,rgba(148,163,184,.18) 36%)}
+.tl-item{position:relative;padding-top:2.1rem}
+.tl-dot{position:absolute;top:0;left:0;width:16px;height:16px;border-radius:50%;background:var(--bg);border:2px solid rgba(148,163,184,.45)}
+.tl-item.live .tl-dot{background:#A855F7;border-color:#A855F7;animation:dotpulse 2s infinite}
+.tl-item.prog .tl-dot{background:#38BDF8;border-color:#38BDF8;box-shadow:0 0 12px rgba(56,189,248,.7)}
+@keyframes dotpulse{0%{box-shadow:0 0 0 0 rgba(168,85,247,.55)}70%{box-shadow:0 0 0 10px rgba(168,85,247,0)}100%{box-shadow:0 0 0 0 rgba(168,85,247,0)}}
+.tl-quarter{font-family:var(--fm);font-size:.7rem;letter-spacing:.2em;color:var(--faint);text-transform:uppercase}
+.tl-item h3{font-size:1.08rem;margin:.5rem 0 .35rem}
+.tl-item p{font-size:.85rem;color:var(--muted)}
+.status{display:inline-flex;align-items:center;gap:.45rem;font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.32rem .75rem;border-radius:999px;margin-top:.9rem}
+.status i{width:6px;height:6px;border-radius:50%;background:currentColor}
+.status.live{background:rgba(168,85,247,.14);color:#D8B4FE;border:1px solid rgba(168,85,247,.42)}
+.status.prog{background:rgba(56,189,248,.1);color:#7DD3FC;border:1px solid rgba(56,189,248,.38)}
+.status.up{background:rgba(148,163,184,.08);color:#94A3B8;border:1px solid rgba(148,163,184,.26)}
+.status.lock{background:transparent;color:var(--faint);border:1px dashed rgba(148,163,184,.32)}
+
+/* ============ 5. BETA PERKS ============ */
+.beta{padding:5.5rem 0}
+.perk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.25rem}
+.perk-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:1.8rem 1.5rem;transition:transform .3s,box-shadow .3s}
+.perk-card:hover{transform:translateY(-5px);box-shadow:0 20px 50px -22px rgba(0,0,0,.75)}
+.perk-card.featured{border:1px solid transparent;background:linear-gradient(#151A26,#151A26) padding-box,linear-gradient(135deg,#A855F7,#38BDF8) border-box;box-shadow:0 0 52px -14px rgba(168,85,247,.45)}
+.perk-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(168,85,247,.18),rgba(56,189,248,.18));border:1px solid rgba(56,189,248,.3);color:#7DD3FC;margin-bottom:1.1rem}
+.perk-icon .icon{width:22px;height:22px}
+.perk-tag{font-family:var(--fm);font-size:.6rem;letter-spacing:.2em;color:#0B0E14;background:var(--grad);padding:.3rem .6rem;border-radius:6px;font-weight:700;text-transform:uppercase;display:inline-block;margin-bottom:1rem}
+.perk-card h3{font-size:1.05rem;margin-bottom:.6rem}
+.perk-card p{color:var(--muted);font-size:.88rem}
+.capture{margin-top:3.5rem;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:clamp(2rem,4vw,3rem);text-align:center;position:relative;overflow:hidden}
+.capture::before{content:'';position:absolute;top:50%;left:-120px;width:340px;height:340px;transform:translateY(-50%);background:radial-gradient(circle,rgba(168,85,247,.14),transparent 70%);pointer-events:none}
+.capture::after{content:'';position:absolute;top:50%;right:-120px;width:340px;height:340px;transform:translateY(-50%);background:radial-gradient(circle,rgba(56,189,248,.12),transparent 70%);pointer-events:none}
+.capture h3{font-size:clamp(1.35rem,2.6vw,1.9rem);margin-bottom:.6rem;position:relative}
+.capture>p{color:var(--muted);margin-bottom:1.8rem;position:relative}
+.capture-form{display:flex;gap:.7rem;max-width:540px;margin:0 auto;position:relative}
+.capture-form input{flex:1;min-width:0;background:var(--ink);border:1px solid rgba(148,163,184,.22);border-radius:12px;padding:.95rem 1.1rem;color:#fff;font-size:.95rem;font-family:var(--fb);outline:none;transition:border-color .2s,box-shadow .2s}
+.capture-form input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(168,85,247,.2)}
+.capture-form input.error{border-color:#F43F5E;box-shadow:0 0 0 3px rgba(244,63,94,.18)}
+.form-err{color:#FB7185;font-size:.8rem;margin-top:.8rem;min-height:1.2em;position:relative}
+.fine{color:var(--faint);font-size:.74rem;margin-top:.8rem;position:relative}
+.founder-success{display:flex;flex-direction:column;align-items:center;gap:.7rem;padding:1rem 0;position:relative}
+.founder-success h3{font-size:1.3rem}
+.success-ring{width:64px;height:64px;border-radius:50%;background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.5);display:flex;align-items:center;justify-content:center;color:var(--green);margin-bottom:.4rem}
+
+/* ============ FOOTER ============ */
+footer{border-top:1px solid var(--line);background:#090C11;padding:4rem 0 2.2rem}
+.foot-grid{display:grid;grid-template-columns:1.7fr 1fr 1fr 1fr;gap:2.5rem}
+.foot-brand p{color:var(--faint);font-size:.85rem;margin:1.1rem 0 1.3rem;max-width:270px}
+.socials{display:flex;gap:.6rem;flex-wrap:wrap}
+.socials a{width:38px;height:38px;border-radius:10px;border:1px solid rgba(148,163,184,.2);display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .2s}
+.socials a:hover{color:#fff;border-color:rgba(168,85,247,.65);background:rgba(168,85,247,.12);transform:translateY(-2px)}
+.socials svg{width:17px;height:17px}
+.foot-col h4{font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-bottom:1.1rem;font-family:var(--fm);font-weight:600}
+.foot-col a{display:block;color:var(--muted);font-size:.87rem;padding:.3rem 0;transition:color .2s}
+.foot-col a:hover{color:#fff}
+.foot-bottom{margin-top:3rem;padding-top:1.8rem;border-top:1px solid var(--line-soft);display:flex;flex-direction:column;align-items:center;gap:1.3rem}
+.tm-badge{display:inline-flex;align-items:center;gap:.6rem;padding:.75rem 1.3rem;border-radius:999px;border:1px solid transparent;background:linear-gradient(#151A26,#151A26) padding-box,var(--grad) border-box;box-shadow:0 0 34px -8px rgba(168,85,247,.5);font-family:var(--fd);font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:#E2E8F0;text-align:center}
+.tm-badge b{color:#fff}
+.tm-badge svg{width:15px;height:15px;color:#7DD3FC;flex:none}
+.legal-line{color:#475569;font-size:.76rem;text-align:center;max-width:620px}
+
+/* ============ MODAL & TOAST ============ */
+.modal{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;visibility:hidden;opacity:0;transition:opacity .25s,visibility .25s}
+.modal.open{visibility:visible;opacity:1}
+.modal-overlay{position:absolute;inset:0;background:rgba(4,6,10,.72);backdrop-filter:blur(6px)}
+.modal-panel{position:relative;width:min(440px,100%);background:var(--panel);border-radius:16px;border:1px solid rgba(148,163,184,.18);box-shadow:0 0 0 1px rgba(168,85,247,.22),0 40px 100px -20px rgba(0,0,0,.9),0 0 80px -20px rgba(168,85,247,.4);overflow:hidden;transform:translateY(14px) scale(.98);transition:transform .3s cubic-bezier(.22,1,.36,1)}
+.modal.open .modal-panel{transform:none}
+.modal-bar{display:flex;align-items:center;gap:.6rem;padding:.85rem 1.1rem;background:var(--panel-2);border-bottom:1px solid var(--line);font-size:.8rem;color:var(--muted);font-family:var(--fm)}
+.modal-dot{width:9px;height:9px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue))}
+.modal-ver{margin-left:auto;color:var(--faint);font-size:.66rem}
+.modal-x{margin-left:.6rem;background:none;border:0;color:var(--muted);font-size:1.15rem;cursor:pointer;width:28px;height:28px;border-radius:6px;line-height:1}
+.modal-x:hover{background:rgba(255,255,255,.08);color:#fff}
+.modal-body{padding:1.8rem}
+.modal-body h3{font-size:1.25rem;margin-bottom:.5rem}
+.modal-body>p{color:var(--muted);font-size:.9rem;margin-bottom:1.3rem}
+.modal-body label{display:block;font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:.5rem}
+.modal-body input{width:100%;background:var(--ink);border:1px solid rgba(148,163,184,.22);border-radius:10px;padding:.85rem 1rem;color:#fff;font-family:var(--fm);font-size:.9rem;outline:none;margin-bottom:1.1rem}
+.modal-body input:focus{border-color:var(--blue)}
+.modal-note{text-align:center;color:var(--faint);font-size:.7rem;font-family:var(--fm);letter-spacing:.08em;margin-top:1rem}
+.modal-success{text-align:center;padding:2.8rem 1.8rem}
+.modal-success h3{margin-bottom:.5rem}
+.modal-success p{color:var(--muted);font-size:.88rem}
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,24px);z-index:300;background:var(--panel);border:1px solid rgba(148,163,184,.22);color:#E2E8F0;padding:.85rem 1.3rem .85rem 1.5rem;border-radius:12px;font-size:.85rem;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;box-shadow:0 20px 50px -12px rgba(0,0,0,.85);max-width:92vw;text-align:center;overflow:hidden}
+.toast::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--grad)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:1020px){
+  .voicepanel{display:none}
+}
+@media(max-width:960px){
+  .nav-links{display:none}
+  .burger{display:flex}
+  .tl{grid-template-columns:1fr 1fr;row-gap:2.2rem}
+  .tl::before{display:none}
+  .tracker-grid{grid-template-columns:1fr;gap:1.6rem;align-items:start}
+}
+@media(max-width:860px){
+  .chanbox{width:196px}
+  .app-body{height:540px}
+  .foot-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:700px){
+  .chanbox{display:none}
+  .tl{grid-template-columns:1fr}
+  .tl-item{padding-top:0;padding-left:2.1rem}
+  .tl-dot{top:5px}
+  .tl::before{display:block;left:7px;top:10px;bottom:10px;width:2px;height:auto;right:auto;background:linear-gradient(180deg,#A855F7,rgba(148,163,184,.18) 60%)}
+}
+@media(max-width:560px){
+  .hero{padding-top:132px}
+  .nav-actions .btn{display:none}
+  .app-body{height:480px}
+  .members{display:none}
+  .tracker-stats{grid-template-columns:repeat(auto-fit,minmax(100px,1fr))}
+  .capture-form{flex-direction:column}
+  .capture-form .btn{width:100%}
+  .ch-left p{display:none}
+  .foot-grid{grid-template-columns:1fr 1fr;gap:2rem}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- ICON LIBRARY -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="sync-logo" viewBox="0 0 36 36">
+    <path d="M8.5 25.5C20 25.5 16 10.5 27.5 10.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="8.5" cy="25.5" r="4.8" fill="currentColor"/>
+    <circle cx="27.5" cy="10.5" r="4.8" fill="currentColor"/>
+  </symbol>
+  <symbol id="i-hash" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></g></symbol>
+  <symbol id="i-voice" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></g></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></g></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></g></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></g></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></g></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></g></symbol>
+  <symbol id="i-monitor" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></g></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></g></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></g></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></g></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 21h16"/></g></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path fill="currentColor" d="M17.9 3H21l-6.8 7.8L22.2 21h-6.3l-4.9-6.4L5.4 21H2.3l7.3-8.3L2 3h6.4l4.4 5.9L17.9 3Zm-1.1 16.1h1.7L7.6 4.7H5.7l11.1 14.4Z"/></symbol>
+  <symbol id="i-discord" viewBox="0 0 24 24"><path fill="currentColor" d="M19.3 5.3A16.4 16.4 0 0 0 14.2 3.9l-.3.6a12 12 0 0 0-3.8 0l-.3-.6a16.4 16.4 0 0 0-5.1 1.4C1.1 9.2.5 12.9.9 16.6a16 16 0 0 0 4.8 2.4l1-1.7a10.3 10.3 0 0 1-1.6-.8l.4-.3a11.4 11.4 0 0 0 10.8 0l.4.3a10.3 10.3 0 0 1-1.6.8l1 1.7a16 16 0 0 0 4.8-2.4c.5-4.2-.3-7.6-2.5-11.3ZM8.7 15.1c-1.2 0-2.2-1.1-2.2-2.4S7.5 10.3 8.7 10.3s2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm6.6 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></symbol>
+  <symbol id="i-youtube" viewBox="0 0 24 24"><path fill="currentColor" d="M22.6 7.2a2.9 2.9 0 0 0-2-2C18.9 4.8 12 4.8 12 4.8s-6.9 0-8.6.4a2.9 2.9 0 0 0-2 2A30 30 0 0 0 1 12a30 30 0 0 0 .4 4.8 2.9 2.9 0 0 0 2 2c1.7.4 8.6.4 8.6.4s6.9 0 8.6-.4a2.9 2.9 0 0 0 2-2A30 30 0 0 0 23 12a30 30 0 0 0-.4-4.8ZM9.8 15.2V8.8L15.5 12Z"/></symbol>
+  <symbol id="i-twitch" viewBox="0 0 24 24"><path fill="currentColor" d="M4 2 1.6 6.4V21h4.9v3h3.2l3-3h5.4l4.3-4.3V2H4Zm16 13.8-3 3H13l-3 3v-3H4.2V4h15.8v11.8ZM17.3 8h-2.1v5.4h2.1V8Zm-5.6 0H9.6v5.4h2.1V8Z"/></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.2-3.4-1.2-.4-1.3-1.2-1.6-1.2-1.6-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.2-.3-4.6-1.1-4.6-5 0-1.1.4-2 1.2-2.7-.1-.3-.4-1.3.1-2.7 0 0 1-.3 2.8 1.1a11.1 11.1 0 0 1 5 0C17.6 4.9 18.6 5.2 18.6 5.2c.5 1.4.2 2.4.1 2.7.8.7 1.2 1.6 1.2 2.7 0 3.9-2.4 4.7-4.6 5 .4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5A10 10 0 0 0 12 2Z"/></symbol>
+</svg>
+
+<!-- 1. FIXED NAVIGATION BAR -->
+<header class="nav" id="nav">
+  <div class="container nav-inner">
+    <a class="brand" href="#top" aria-label="SYNC home">
+      <svg class="logo" aria-hidden="true"><use href="#sync-logo"/></svg>
+      <span class="brand-name">SYNC</span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#features" data-spy="features">Features</a>
+      <a href="#roadmap" data-spy="roadmap">Roadmap</a>
+      <a href="#beta" data-spy="beta">Beta Perks</a>
+    </nav>
+    <div class="nav-actions">
+      <button type="button" class="btn btn-primary btn-sm" data-open-web>Open Web App</button>
+      <button type="button" class="burger" id="burger" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobileMenu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+<nav class="mobile-menu" id="mobileMenu" aria-label="Mobile">
+  <a href="#features">Features</a>
+  <a href="#roadmap">Roadmap</a>
+  <a href="#beta">Beta Perks</a>
+  <button type="button" class="btn btn-primary" data-open-web>Open Web App</button>
+</nav>
+
+<main id="top">
+
+  <!-- 2. HERO SEGMENT -->
+  <section class="hero">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="container hero-inner">
+      <div class="hero-badge"><span class="pulse-dot"></span> Public Beta v0.9.4 — Now Rolling Out</div>
+      <h1>SYNC Your World.<br>Elite Desktop Spaces for <span class="grad-text">Gamers &amp; Creators</span>.</h1>
+      <p class="hero-sub">Voice, text and live production tooling engineered for near-zero ping — rebuilt from the pixels up for a true desktop-first experience.</p>
+      <div class="hero-ctas">
+        <button type="button" class="btn btn-primary btn-lg" id="dlBtn"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>Download for Windows <span class="os-note">x64 · 84 MB</span></button>
+        <button type="button" class="btn btn-ghost btn-lg" data-open-web>Launch in Browser</button>
+      </div>
+      <div class="hero-meta"><span>WIN x64 · MAC · WEB</span><span>OPUS HD VOICE</span><span>END-TO-END ENCRYPTED</span></div>
+
+      <!-- App interface mockup -->
+      <div class="mockup-wrap">
+        <div class="app-window" aria-label="SYNC desktop app preview">
+          <div class="app-titlebar">
+            <div class="tb-left">
+              <svg class="logo xs" aria-hidden="true"><use href="#sync-logo"/></svg>
+              <span>SYNC — Desktop Preview</span>
+              <span class="tb-chip">v0.9.4</span>
+            </div>
+            <div class="tb-right">
+              <button type="button" class="tb-btn" data-tb="minimize" aria-label="Minimize">–</button>
+              <button type="button" class="tb-btn" data-tb="maximize" aria-label="Maximize">▢</button>
+              <button type="button" class="tb-btn close" data-tb="close" aria-label="Close">✕</button>
+            </div>
+          </div>
+          <div class="app-body">
+            <aside class="rail" aria-label="Servers">
+              <button type="button" class="rail-item active" style="--g:linear-gradient(135deg,#A855F7,#6D28D9)" aria-label="Server: Founder Hub">S</button>
+              <button type="button" class="rail-item" style="--g:linear-gradient(135deg,#22D3EE,#0284C7)" aria-label="Server: Esports Central">E</button>
+              <button type="button" class="rail-item" style="--g:linear-gradient(135deg,#34D399,#059669)" aria-label="Server: Creator Studio">C</button>
+              <button type="button" class="rail-item" style="--g:linear-gradient(135deg,#F59E0B,#B45309)" aria-label="Server: Matchmaking">M</button>
+              <button type="button" class="rail-add" id="railAdd" aria-label="Add server">+</button>
+            </aside>
+            <aside class="chanbox" aria-label="Channels">
+              <div class="chanbox-head">Founder Hub <svg class="icon" style="width:14px;height:14px" aria-hidden="true"><use href="#i-hash"/></svg></div>
+              <p class="chan-label">Voice Channels</p>
+              <button type="button" class="chan-row" data-chan="lobbyVoice"><svg class="icon" aria-hidden="true"><use href="#i-voice"/></svg> lobby-voice <span class="live-dot"></span></button>
+              <button type="button" class="chan-row" data-chan="castBooth"><svg class="icon" aria-hidden="true"><use href="#i-voice"/></svg> cast-booth</button>
+              <p class="chan-label">Text Channels</p>
+              <button type="button" class="chan-row active" data-chan="lobby"><svg class="icon" aria-hidden="true"><use href="#i-hash"/></svg> the-lobby</button>
+              <button type="button" class="chan-row" data-chan="esports"><svg class="icon" aria-hidden="true"><use href="#i-hash"/></svg> esports <span class="badge-unread">3</span></button>
+              <button type="button" class="chan-row" data-chan="showcase"><svg class="icon" aria-hidden="true"><use href="#i-hash"/></svg> showcase</button>
+              <p class="chan-label">Direct Messages</p>
+              <button type="button" class="chan-row dm"><span class="dm-av" style="background:linear-gradient(135deg,#A855F7,#6D28D9)">N</span> Nova <span class="dm-status"></span></button>
+              <button type="button" class="chan-row dm"><span class="dm-av" style="background:linear-gradient(135deg,#22D3EE,#0E7490)">P</span> pixelforge</button>
+            </aside>
+            <main class="chat" id="chatArea">
+              <header class="chat-head">
+                <div class="ch-left">
+                  <svg class="icon ico-hash" aria-hidden="true"><use href="#i-hash"/></svg>
+                  <svg class="icon ico-voice" aria-hidden="true"><use href="#i-voice"/></svg>
+                  <div><h3 id="chanName"># the-lobby</h3><p id="chanTopic">Ranked ladder — squad lobby</p></div>
+                </div>
+                <div class="ch-right">
+                  <span class="members"><svg class="icon" aria-hidden="true"><use href="#i-users"/></svg> 128</span>
+                  <span class="ping"><i></i><b id="pingVal">17</b>ms</span>
+                </div>
+              </header>
+              <div class="msgs" id="msgs"></div>
+              <div class="voice-view" id="voiceView">
+                <div class="vv-top">
+                  <span class="vv-ic"><svg class="icon" aria-hidden="true"><use href="#i-voice"/></svg></span>
+                  <div><h4 id="vvName">lobby-voice</h4><p id="vvSub">Voice Channel — 4 connected</p></div>
+                </div>
+                <div class="eq" id="eqBars" aria-hidden="true"></div>
+                <div class="vv-users" id="vvUsers"></div>
+                <div class="vv-actions">
+                  <button type="button" class="btn btn-ghost btn-sm" id="muteBtn">Mute All</button>
+                  <button type="button" class="btn btn-primary btn-sm" id="leaveBtn">Leave Channel</button>
+                </div>
+              </div>
+              <form class="composer" id="composerForm">
+                <input id="composerInput" placeholder="Message #the-lobby" autocomplete="off" maxlength="200" aria-label="Message input">
+                <button type="submit" class="send-btn" aria-label="Send message"><svg class="icon" aria-hidden="true"><use href="#i-send"/></svg></button>
+              </form>
+            </main>
+            <aside class="voicepanel" aria-label="Voice status">
+              <div class="vp-head"><i class="live-dot"></i> VOICE — LOBBY 01</div>
+              <div class="vp-list">
+                <div class="vp-row speaking"><div class="msg-av" style="background:linear-gradient(135deg,#A855F7,#6D28D9)">N</div><div class="vp-meta"><span>Nova</span><i>18ms · speaking</i></div><div class="mini-wave"><i></i><i></i><i></i><i></i></div></div>
+                <div class="vp-row"><div class="msg-av" style="background:linear-gradient(135deg,#22D3EE,#0E7490)">P</div><div class="vp-meta"><span>pixelforge</span><i>22ms</i></div><div class="mini-wave"><i></i><i></i><i></i><i></i></div></div>
+                <div class="vp-row"><div class="msg-av" style="background:linear-gradient(135deg,#34D399,#047857)">K</div><div class="vp-meta"><span>Kai_Dev</span><i>31ms</i></div><div class="mini-wave"><i></i><i></i><i></i><i></i></div></div>
+                <div class="vp-row"><div class="msg-av" style="background:linear-gradient(135deg,#FBBF24,#B45309)">A</div><div class="vp-meta"><span>mod_ana</span><i>19ms</i></div><div class="mini-wave"><i></i><i></i><i></i><i></i></div></div>
+                <div class="vp-row more"><div class="msg-av">+5</div><div class="vp-meta"><span>5 others</span><i>in lobby-voice</i></div></div>
+              </div>
+              <div class="vp-foot">
+                <button type="button" class="btn btn-ghost btn-sm" id="inviteBtn">Invite</button>
+                <button type="button" class="btn btn-primary btn-sm" id="deckBtn">Create Deck</button>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. 2,000-USER GROWTH TRACKER -->
+  <section class="tracker-section" id="milestone" aria-label="Beta milestone tracker">
+    <div class="container">
+      <div class="tracker-card" id="trackerCard">
+        <div class="tracker-head">
+          <span class="eyebrow">Community Milestone</span>
+          <span class="cohort-chip">BETA COHORT 01 — OPEN</span>
+        </div>
+        <div class="tracker-grid">
+          <div>
+            <div class="tracker-big"><span id="memberCount">1,240</span> <span class="dim">/ 2,000</span></div>
+            <p class="tracker-sub">Foundational Members joined this cohort — and counting.</p>
+          </div>
+          <div class="tracker-stats">
+            <div class="tstat"><b id="pctLabel">62%</b><span>Of cohort</span></div>
+            <div class="tstat"><b id="remainingLabel">760</b><span>Seats left</span></div>
+            <div class="tstat"><b>~14ms</b><span>Avg ping</span></div>
+          </div>
+        </div>
+        <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="62" aria-label="Foundational member progress">
+          <div class="progress-fill" id="progressFill"><span class="p-dot"></span></div>
+        </div>
+        <div class="progress-labels">
+          <span><b id="joinedLabel">1,240</b> joined</span>
+          <span><b id="remainingLabel2">760</b> to go</span>
+          <span>Goal <b>2,000</b></span>
+        </div>
+        <p class="tracker-caption">Secure permanent <span class="grad-text">Ultra Premium</span> features entirely free by joining our first 2,000 early birds!</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. FEATURE MATRIX CARDS -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Features</span>
+        <h2>Built for the Desktop. Ready for the Game.</h2>
+        <p>Every panel, pipeline and packet — engineered for monitors, not mobile.</p>
+      </div>
+      <div class="feat-grid">
+        <article class="feat-card">
+          <div class="feat-icon"><svg class="icon" aria-hidden="true"><use href="#i-bolt"/></svg></div>
+          <h3>Ultra-Low Latency Channels</h3>
+          <p>Dedicated crisp audio matrix lines.</p>
+          <ul class="feat-list">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg> Sub-20ms Opus audio stack</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg> Per-region relay routing</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg> Zero jitter buffering</li>
+          </ul>
+        </article>
+        <article class="feat-card">
+          <div class="feat-icon"><svg class="icon" aria-hidden="true"><use href="#i-monitor"/></svg></div>
+          <h3>True Desktop-First Client</h3>
+          <p>Sharp, rigid panels designed specifically for monitors over mobile aspect ratios.</p>
+          <ul class="feat-list">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg> Rigid multi-panel layouts</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg> Monitor-native UI density</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg> Keyboard-first command bar</li>
+          </ul>
+        </article>
+        <article class="feat-card">
+          <div class="feat-icon"><svg class="icon" aria-hidden="true"><use href="#i-sliders"/></svg></div>
+          <h3>Integrated Creator Toolsets</h3>
+          <p>Seamlessly configured pipelines for gamers, developers, and modders.</p>
+          <ul class="feat-list">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg> OBS-ready capture pipeline</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg> Mod dashboards &amp; roles</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg> 4K60 stream + overlay engine</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROADMAP -->
+  <section class="roadmap-sec" id="roadmap">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Roadmap</span>
+        <h2>The Road to <span class="grad-text">v1.0</span></h2>
+        <p>Founder input shapes every quarter — vote on what ships next.</p>
+      </div>
+      <div class="tl">
+        <div class="tl-item live">
+          <span class="tl-dot"></span>
+          <span class="tl-quarter">Q1 · 2025</span>
+          <h3>Public Beta</h3>
+          <p>Desktop client, lightning channels, voice and the streaming toolkit.</p>
+          <span class="status live"><i></i>Live Now</span>
+        </div>
+        <div class="tl-item prog">
+          <span class="tl-dot"></span>
+          <span class="tl-quarter">Q2 · 2025</span>
+          <h3>Creator Studio</h3>
+          <p>Plugin SDK, fully custom panels and the live overlay engine.</p>
+          <span class="status prog"><i></i>In Progress</span>
+        </div>
+        <div class="tl-item">
+          <span class="tl-dot"></span>
+          <span class="tl-quarter">Q3 · 2025</span>
+          <h3>Global Relay Expansion</h3>
+          <p>14 low-latency regions, 4K60 streaming and network storm-mode.</p>
+          <span class="status up"><i></i>Upcoming</span>
+        </div>
+        <div class="tl-item">
+          <span class="tl-dot"></span>
+          <span class="tl-quarter">Q4 · 2025</span>
+          <h3>Ultra Premium Launch</h3>
+          <p>Every founder feature unlocked. Final v1.0 client drop.</p>
+          <span class="status lock"><i></i>Locked</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BETA PERKS -->
+  <section class="beta" id="beta">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Beta Perks</span>
+        <h2>Founder Tier <span class="grad-text">Perks</span></h2>
+        <p>Join the first 2,000 and keep every premium unlock permanently.</p>
+      </div>
+      <div class="perk-grid">
+        <article class="perk-card featured">
+          <span class="perk-tag">Founder Tier</span>
+          <div class="perk-icon"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg></div>
+          <h3>Permanent Ultra Premium</h3>
+          <p>Everything we're building, unlocked forever. No trial expiry, no paywall, ever again.</p>
+        </article>
+        <article class="perk-card">
+          <div class="perk-icon"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg></div>
+          <h3>Founder Profile Frame</h3>
+          <p>Your handle wears a living gradient ring and a founder sigil in every space.</p>
+        </article>
+        <article class="perk-card">
+          <div class="perk-icon"><svg class="icon" aria-hidden="true"><use href="#i-bolt"/></svg></div>
+          <h3>Priority Relay &amp; Voice</h3>
+          <p>Early access to low-latency relay regions and reserved priority voice lanes.</p>
+        </article>
+        <article class="perk-card">
+          <div class="perk-icon"><svg class="icon" aria-hidden="true"><use href="#i-users"/></svg></div>
+          <h3>Roadmap Vote &amp; Dev Line</h3>
+          <p>Monthly votes that shape v1.0, plus direct Q&amp;A sessions with the SYNC team.</p>
+        </article>
+      </div>
+      <div class="capture" id="founderWrap">
+        <h3>Reserve Your Founder Seat</h3>
+        <p>One seat per founder. No credit card. Permanent Ultra Premium.</p>
+        <form class="capture-form" id="founderForm" novalidate>
+          <input type="email" id="founderEmail" placeholder="you@clan.gg" aria-label="Email address">
+          <button type="submit" class="btn btn-primary">Claim My Perk</button>
+        </form>
+        <div class="form-err" id="formErr" aria-live="polite"></div>
+        <p class="fine">Locked at signup · Goes live with the v1.0 client drop</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- 5. FOOTER BANNER -->
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a class="brand" href="#top" aria-label="SYNC home">
+          <svg class="logo" aria-hidden="true"><use href="#sync-logo"/></svg>
+          <span class="brand-name">SYNC</span>
+        </a>
+        <p>The elite desktop chat client for gamers and creators. Voice, text and production tooling — engineered for the world after the mobile era.</p>
+        <div class="socials">
+          <a href="#" aria-label="X / Twitter"><svg aria-hidden="true"><use href="#i-x"/></svg></a>
+          <a href="#" aria-label="Discord"><svg aria-hidden="true"><use href="#i-discord"/></svg></a>
+          <a href="#" aria-label="YouTube"><svg aria-hidden="true"><use href="#i-youtube"/></svg></a>
+          <a href="#" aria-label="Twitch"><svg aria-hidden="true"><use href="#i-twitch"/></svg></a>
+          <a href="#" aria-label="GitHub"><svg aria-hidden="true"><use href="#i-github"/></svg></a>
+        </div>
+      </div>
+      <nav class="foot-col" aria-label="Product">
+        <h4>Product</h4>
+        <a href="#top">Download for Windows</a>
+        <a href="#features">Features</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="#beta">Beta Perks</a>
+        <a href="#milestone">Status</a>
+      </nav>
+      <nav class="foot-col" aria-label="Company">
+        <h4>Company</h4>
+        <a href="#">About</a>
+        <a href="#">Press Kit</a>
+        <a href="#">Careers</a>
+        <a href="#">Contact</a>
+        <a href="#">Community Guidelines</a>
+      </nav>
+      <nav class="foot-col" aria-label="Legal">
+        <h4>Legal</h4>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Cookie Settings</a>
+        <a href="#">Data Processing Agreement</a>
+        <a href="#">Community Rules</a>
+      </nav>
+    </div>
+    <div class="foot-bottom">
+      <div class="tm-badge"><svg aria-hidden="true"><use href="#i-spark"/></svg><span>Co-developed by <b>GIGABOIZ Studio</b> &amp; <b>GIGALLC</b></span></div>
+      <p class="legal-line">© <span id="year">2025</span> SYNC Labs — a GIGABOIZ × GIGALLC venture. SYNC and the SYNC mark are trademarks of GIGALLC. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- WEB CLIENT MODAL -->
+<div class="modal" id="webModal" role="dialog" aria-modal="true" aria-labelledby="webModalTitle">
+  <div class="modal-overlay" data-close></div>
+  <div class="modal-panel">
+    <div class="modal-bar"><span class="modal-dot"></span> SYNC Web Client <span class="modal-ver">v0.9.4</span><button type="button" class="modal-x" data-close aria-label="Close">✕</button></div>
+    <div class="modal-body" id="modalFormView">
+      <h3 id="webModalTitle">Launch Sync Web</h3>
+      <p>Enter a join code or founder handle to open an optimized browser session.</p>
+      <label for="joinCode">Join Code</label>
+      <input id="joinCode" value="SYNC-FND-2000" spellcheck="false">
+      <button type="button" class="btn btn-primary btn-block" id="launchBtn">Launch Session</button>
+      <p class="modal-note">WEBRTC RELAY · SSO · OVERCLOCKED AUDIO</p>
+    </div>
+    <div class="modal-body modal-success" id="modalSuccessView" hidden>
+      <div class="success-ring"><svg class="icon" style="width:28px;height:28px" aria-hidden="true"><use href="#i-check"/></svg></div>
+      <h3>Session Established</h3>
+      <p>Handshake complete — opening your space…</p>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  'use strict';
+  var $ = function(s){ return document.querySelector(s); };
+  var $$ = function(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); };
+  var fmt = function(n){ return n.toLocaleString('en-US'); };
+  var esc = function(s){ return s.replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
+
+  /* ---------- Footer year ---------- */
+  $('#year').textContent = new Date().getFullYear();
+
+  /* ---------- Sticky nav ---------- */
+  var nav = $('#nav');
+  function onScroll(){ nav.classList.toggle('scrolled', window.scrollY > 10); }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  /* ---------- Mobile menu ---------- */
+  var burger = $('#burger'), mobileMenu = $('#mobileMenu');
+  function closeMenu(){ mobileMenu.classList.remove('open'); burger.classList.remove('open'); burger.setAttribute('aria-expanded','false'); }
+  burger.addEventListener('click', function(){
+    var open = mobileMenu.classList.toggle('open');
+    burger.classList.toggle('open', open);
+    burger.setAttribute('aria-expanded', String(open));
+  });
+  mobileMenu.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', closeMenu); });
+
+  /* ---------- Scroll spy ---------- */
+  var spyLinks = $$('.nav-links a[data-spy]');
+  var spyIO = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        spyLinks.forEach(function(l){ l.classList.toggle('active', l.getAttribute('data-spy') === en.target.id); });
+      }
+    });
+  }, {rootMargin:'-45% 0px -50% 0px'});
+  ['features','roadmap','beta'].forEach(function(id){ var el = document.getElementById(id); if(el) spyIO.observe(el); });
+
+  /* ---------- Toast ---------- */
+  var toast = $('#toast'), toastTimer;
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2800);
+  }
+
+  /* ---------- Growth tracker ---------- */
+  var state = { joined: 1240, total: 2000 };
+  var memberCount = $('#memberCount'), joinedLabel = $('#joinedLabel'),
+      remainingLabel = $('#remainingLabel'), remainingLabel2 = $('#remainingLabel2'),
+      pctLabel = $('#pctLabel'), progressFill = $('#progressFill'),
+      progressTrack = progressFill.closest('.progress-track');
+
+  function renderTracker(){
+    var pct = Math.round((state.joined / state.total) * 100);
+    joinedLabel.textContent = fmt(state.joined);
+    remainingLabel.textContent = fmt(state.total - state.joined);
+    remainingLabel2.textContent = fmt(state.total - state.joined);
+    pctLabel.textContent = pct + '%';
+    progressFill.style.width = pct + '%';
+    progressTrack.setAttribute('aria-valuenow', pct);
+  }
+  function countUp(el, target, dur){
+    var start = performance.now();
+    function tick(now){
+      var p = Math.min((now - start) / dur, 1);
+      var e = 1 - Math.pow(1 - p, 3);
+      el.textContent = fmt(Math.round(target * e));
+      if(p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+  progressFill.style.width = '0%';
+  var trackIO = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        countUp(memberCount, state.joined, 1600);
+        setTimeout(renderTracker, 120);
+        trackIO.disconnect();
+      }
+    });
+  }, {threshold:.35});
+  trackIO.observe($('#trackerCard'));
+
+  /* ---------- App mockup data ---------- */
+  var AV = {
+    nova:{bg:'linear-gradient(135deg,#A855F7,#6D28D9)', t:'N', c:'#C084FC', name:'Nova', ms:18},
+    pf:{bg:'linear-gradient(135deg,#22D3EE,#0E7490)', t:'P', c:'#67E8F9', name:'pixelforge', ms:22},
+    kai:{bg:'linear-gradient(135deg,#34D399,#047857)', t:'K', c:'#6EE7B7', name:'Kai_Dev', ms:31},
+    ana:{bg:'linear-gradient(135deg,#FBBF24,#B45309)', t:'A', c:'#FCD34D', name:'mod_ana', ms:19},
+    me:{bg:'linear-gradient(135deg,#F472B6,#9D174D)', t:'YO', c:'#F9A8D4', name:'you', ms:12}
+  };
+  var CHANNELS = {
+    lobby:{ name:'the-lobby', topic:'Ranked ladder — squad lobby', msgs:[
+      {u:'nova', t:'19:42', x:'gg last round, that 1v4 clutch was basically inhuman'},
+      {u:'pf', t:'19:44', x:'anyone up for ranked in 10? finally pushing my unrated grind'},
+      {u:'kai', t:'19:45', x:'in. spin up lobby-voice when you are ready'}
+    ]},
+    esports:{ name:'esports', topic:'Tournaments & competitive play', msgs:[
+      {u:'ana', t:'20:02', x:'PINNED: bracket moved to double-elim — new format thread here'},
+      {u:'kai', t:'20:05', x:'seeding sheet is live, check the voting thread'},
+      {u:'nova', t:'20:07', x:'my finals run is officially on'}
+    ]},
+    showcase:{ name:'showcase', topic:'Show off your setup', msgs:[
+      {u:'pf', t:'18:20', x:'shipped the gradient OBS theme pack — goes hard on dark UI'},
+      {u:'nova', t:'18:32', x:'credit? been trying to make the background transparent for hours'},
+      {u:'kai', t:'18:40', x:'fired it up in showcase — crisp audio, zero stutter'}
+    ]}
+  };
+  var ROOMS = {
+    lobbyVoice:{ name:'lobby-voice', users:['nova','kai','pf','ana'] },
+    castBooth:{ name:'cast-booth', users:['pf','nova'] }
+  };
+  var REPLIES = ['bet','on it','gg','run it back','nice one','in.','+1','lets gooo'];
+  var REPLIERS = ['nova','pf','kai'];
+
+  var chatArea = $('#chatArea'), chanName = $('#chanName'), chanTopic = $('#chanTopic'),
+      msgsEl = $('#msgs'), voiceView = $('#voiceView'), vvName = $('#vvName'),
+      vvSub = $('#vvSub'), vvUsers = $('#vvUsers'), composerForm = $('#composerForm'),
+      composerInput = $('#composerInput'), muteBtn = $('#muteBtn');
+  var currentText = 'lobby', currentVoice = null;
+
+  $('#eqBars').innerHTML = new Array(27).join('<i></i>');
+
+  function msgHTML(m){
+    var a = AV[m.u];
+    return '<div class="msg"><div class="msg-av" style="background:' + a.bg + '">' + a.t + '</div>' +
+      '<div class="msg-main"><div class="msg-top"><span class="msg-user" style="color:' + a.c + '">' + a.name + '</span>' +
+      '<span class="msg-time">' + m.t + '</span></div><p>' + m.x + '</p></div></div>';
+  }
+  function markActive(key){
+    $$('.chan-row[data-chan]').forEach(function(r){ r.classList.toggle('active', r.getAttribute('data-chan') === key); });
+    var row = document.querySelector('[data-chan="' + key + '"]');
+    if(row){ var b = row.querySelector('.badge-unread'); if(b) b.remove(); }
+  }
+  function renderChannel(key){
+    var ch = CHANNELS[key];
+    currentText = key; currentVoice = null;
+    chatArea.classList.remove('is-voice');
+    voiceView.classList.remove('muted');
+    muteBtn.textContent = 'Mute All';
+    chanName.textContent = '# ' + ch.name;
+    chanTopic.textContent = ch.topic;
+    msgsEl.innerHTML = ch.msgs.map(msgHTML).join('');
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+    composerInput.placeholder = 'Message #' + ch.name;
+    markActive(key);
+  }
+  function renderVoice(key){
+    var r = ROOMS[key];
+    currentVoice = key;
+    chatArea.classList.add('is-voice');
+    voiceView.classList.remove('muted');
+    muteBtn.textContent = 'Mute All';
+    chanName.textContent = r.name;
+    chanTopic.textContent = 'Voice Channel';
+    vvName.textContent = r.name;
+    vvSub.textContent = 'Voice Channel — ' + r.users.length + ' connected';
+    vvUsers.innerHTML = r.users.map(function(u){
+      var a = AV[u];
+      return '<span class="vv-chip"><span class="msg-av" style="background:' + a.bg + '">' + a.t + '</span>' + a.name + ' <i>' + a.ms + 'ms</i></span>';
+    }).join('');
+    markActive(key);
+  }
+  $$('.chan-row[data-chan]').forEach(function(row){
+    row.addEventListener('click', function(){
+      var key = row.getAttribute('data-chan');
+      if(ROOMS[key]) renderVoice(key); else renderChannel(key);
+    });
+  });
+  $$('.chan-row.dm').forEach(function(row){
+    row.addEventListener('click', function(){ showToast('Direct messages open in the desktop client — grab the build!'); });
+  });
+
+  function nowTime(){
+    var d = new Date();
+    return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+  }
+  composerForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    var v = composerInput.value.trim();
+    if(!v || currentVoice) return;
+    msgsEl.insertAdjacentHTML('beforeend', msgHTML({u:'me', t:nowTime(), x:esc(v)}));
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+    composerInput.value = '';
+    setTimeout(function(){
+      if(currentVoice) return;
+      var u = REPLIERS[Math.floor(Math.random() * REPLIERS.length)];
+      var x = REPLIES[Math.floor(Math.random() * REPLIES.length)];
+      msgsEl.insertAdjacentHTML('beforeend', msgHTML({u:u, t:nowTime(), x:x}));
+      msgsEl.scrollTop = msgsEl.scrollHeight;
+    }, 1000 + Math.random() * 1200);
+  });
+
+  muteBtn.addEventListener('click', function(){
+    var muted = voiceView.classList.toggle('muted');
+    muteBtn.textContent = muted ? 'Unmute' : 'Mute All';
+  });
+  $('#leaveBtn').addEventListener('click', function(){ renderChannel(currentText); });
+
+  /* Live ping ticker */
+  setInterval(function(){ $('#pingVal').textContent = 12 + Math.floor(Math.random() * 12); }, 2000);
+
+  /* Voice panel actions */
+  $('#inviteBtn').addEventListener('click', function(){
+    var link = 'https://sync.gg/invite/FND2000';
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(link).then(function(){ showToast('Invite link copied — ' + link); }, function(){ showToast('Invite link: ' + link); });
+    } else { showToast('Invite link: ' + link); }
+  });
+  $('#deckBtn').addEventListener('click', function(){ showToast('Deck creator opens in the desktop client'); });
+  $('#railAdd').addEventListener('click', function(){ showToast('Server discovery launches in the desktop client'); });
+  $$('.rail-item').forEach(function(item){
+    item.addEventListener('click', function(){
+      $$('.rail-item').forEach(function(i){ i.classList.remove('active'); });
+      item.classList.add('active');
+      showToast('Switched server — ' + item.getAttribute('aria-label').replace('Server: ',''));
+    });
+  });
+  $$('.tb-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var k = btn.getAttribute('data-tb');
+      showToast(k === 'close' ? 'Nice try — this is a live preview window.' : 'Window controls are simulated in this preview.');
+    });
+  });
+
+  /* ---------- Download button ---------- */
+  var dlBtn = $('#dlBtn');
+  dlBtn.addEventListener('click', function(){
+    if(dlBtn.dataset.busy) return;
+    dlBtn.dataset.busy = '1';
+    var orig = dlBtn.innerHTML;
+    dlBtn.innerHTML = '<span class="spinner"></span> Preparing…';
+    setTimeout(function(){
+      dlBtn.innerHTML = orig;
+      delete dlBtn.dataset.busy;
+      showToast('SYNC Setup v0.9.4 for Windows — 84.2 MB download started');
+    }, 1200);
+  });
+
+  /* ---------- Web client modal ---------- */
+  var modal = $('#webModal'), modalFormView = $('#modalFormView'), modalSuccessView = $('#modalSuccessView'),
+      launchBtn = $('#launchBtn'), joinCode = $('#joinCode');
+  function openModal(){
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    closeMenu();
+    setTimeout(function(){ joinCode.focus(); joinCode.select(); }, 80);
+  }
+  function closeModal(){
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+    setTimeout(function(){
+      modalFormView.hidden = false;
+      modalSuccessView.hidden = true;
+      launchBtn.disabled = false;
+      launchBtn.innerHTML = 'Launch Session';
+    }, 250);
+  }
+  $$('[data-open-web]').forEach(function(b){ b.addEventListener('click', function(e){ e.preventDefault(); openModal(); }); });
+  modal.querySelectorAll('[data-close]').forEach(function(el){ el.addEventListener('click', closeModal); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && modal.classList.contains('open')) closeModal(); });
+  joinCode.addEventListener('keydown', function(e){ if(e.key === 'Enter'){ e.preventDefault(); launchBtn.click(); } });
+  launchBtn.addEventListener('click', function(){
+    if(launchBtn.disabled) return;
+    if(!joinCode.value.trim()){ showToast('Enter a join code to launch a session.'); joinCode.focus(); return; }
+    launchBtn.disabled = true;
+    launchBtn.innerHTML = '<span class="spinner"></span> Handshaking…';
+    setTimeout(function(){
+      modalFormView.hidden = true;
+      modalSuccessView.hidden = false;
+      setTimeout(function(){ closeModal(); showToast('Web session established — welcome to SYNC.'); }, 1500);
+    }, 1100);
+  });
+
+  /* ---------- Founder signup ---------- */
+  var form = $('#founderForm'), email = $('#founderEmail'), err = $('#formErr'), wrap = $('#founderWrap');
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var v = email.value.trim();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)){
+      err.textContent = 'Enter a valid email to secure your seat.';
+      email.classList.add('error');
+      email.focus();
+      return;
+    }
+    err.textContent = '';
+    if(state.joined < state.total){
+      state.joined += 1;
+      memberCount.textContent = fmt(state.joined);
+    }
+    renderTracker();
+    wrap.innerHTML = '<div class="founder-success">' +
+      '<div class="success-ring"><svg class="icon" style="width:28px;height:28px" aria-hidden="true"><use href="#i-check"/></svg></div>' +
+      '<h3>You&rsquo;re in, Founder #' + fmt(state.joined) + '</h3>' +
+      '<p>Ultra Premium is now permanently unlocked on the v1.0 client.</p></div>';
+    showToast('Founder seat reserved — Ultra Premium unlocked forever.');
+  });
+  email.addEventListener('input', function(){ email.classList.remove('error'); err.textContent = ''; });
+
+  /* ---------- Initial render ---------- */
+  renderChannel('lobby');
+})();
+</script>
+</body>
+</html>
